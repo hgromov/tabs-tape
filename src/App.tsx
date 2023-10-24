@@ -1,44 +1,62 @@
 import React from "react";
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 
 import { Tape } from "./tabs/tape";
+import { palette } from "./tabs/colors";
+
+const gradientAnimation = keyframes`
+0% {
+    background-position: 0 200%;
+  }
+  100% {
+    background-position: 0 -200%;
+  }
+`;
 
 const AppWrapper = styled.div`
-  background-color: #d3d3d3;
-  height: 100vw;
-  padding-top: 60px;
+  background: radial-gradient(circle, #f73261, #5e35b0);
+  background-size: 200% 200%;
+  animation: ${gradientAnimation} 10s linear infinite;
+  height: 100vh;
 `;
 
 const PageWrapper = styled.div`
-  max-width: 800px;
-  min-width: 600px;
+  padding: 0 50px;
+  position: relative;
+  top: 60px;
+  max-width: 1000px;
+  min-width: 800px;
   height: 120px;
-  background-color: white;
+  background-color: ${palette.darkBlue};
   margin: 0 auto;
   display: flex;
   align-items: center;
 `;
 
 const tabs = [
-  { label: "first tab", id: "1" },
   {
     label:
-      "LLLLLLL LLLLLLL LLLLLLL LLLLLLL LLLLLLL LLLLLLL LLLLLLL LLLLLLL LLLLLLL LLLLLLL LLLLLLL LLLLLLL LLLLLLL LLLLLLL THE END",
+      "FIRST lllllll lllllll lllllll lllllll lllllll lllllll llllllllllllll lllllll",
+    id: "1",
+  },
+  {
+    label:
+      "lllllll lllllll lllllll lllllll lllllll lllllll lllllll llllllllllllll lllllll lllllll",
     id: "2",
   },
   {
     label:
-      "LLLLLLL LLLLLLL LLLLLLL LLLLLLL LLLLLLL LLLLLLL LLLLLLL LLLLLLL LLLLLLL LLLLLLL LLLLLLL LLLLLLL LLLLLLL LLLLLLL LLLLLLL LLLLLLL LLLLLLL THE END LLLLLLLLLLLLLLLLLLLLLLLLLLLL",
+      "LLLLLLL LLLLLLL LLLLLLL LLLLLLL LLLLLLL LLLLLLL LLLLLLL LLLLLLL LLLLLLL LLLLLLL LLLLLLL LLLLLLL LLLLLLL LLLLLLL THE END",
     id: "3",
   },
   {
     label:
-      "lllllll lllllll lllllll lllllll lllllll lllllll lllllll llllllllllllll lllllll lllllll lllllll lllllll",
+      "LLLLLLL LLLLLLL LLLLLLL LLLLLLL LLLLLLL LLLLLLL LLLLLLL LLLLLLL LLLLLLL LLLLLLL LLLLLLL LLLLLLL LLLLLLL LLLLLLL LLLLLLL LLLLLLL LLLLLLL THE END LLLLLLLLLLLLLLLLLLLLLLLLLLLL",
     id: "4",
   },
   { label: "short tab", id: "5" },
   { label: "short tab", id: "6" },
-  { label: "short tab", id: "7" },
+  { label: "short tab tabbb", id: "7" },
   {
     label:
       "tab with a lot of small words inside of it bla bla bla bla bla bla bla bla bla bla la bla bla bla bla bla bla bla bla yey",

@@ -2,7 +2,7 @@ import { palette } from "../colors";
 import { SvgProps } from "../tabs.types";
 
 const ArrowIcon = ({
-  color = palette.darkGray,
+  color = palette.paper,
   height = 10,
   opacity = "1",
   width = 16,

@@ -8,59 +8,97 @@ import {
 
 import { Tab } from "../tab";
 import { ScrollButton } from "../scrollButton";
-import { TapeProps, ScrollDirections } from "../tabs.types";
+import { TapeProps, Directions } from "../tabs.types";
 import { StyledTape, StyledWrapper } from "./tape.styled";
 
-const TAB_MARGIN = 8;
-const TAB_BORDER = 1;
-const TAB_MARGINS = TAB_MARGIN * 2;
-const TAB_BORDERS = TAB_BORDER * 2;
-const TAB_GAP = 44;
-const TAB_EXPANSION = 80;
+const TAB_MARGIN = 12;
 
-const Tape: FunctionComponent<TapeProps> = ({
-  tabs,
-  selectedTabId = "",
-}) => {
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(false);
-  // *scrollLeft is negative value which represents scroll from left.
-  // this is the main value used for scroll. changing it we can scroll the tape using transform translate in useLayoutEffect below.
-  const [scrollLeft, setScrollLeft] = useState(0);
-  const [isLastElementOverflowing, setIsLastElementOverflowing] =
-    useState(false);
+const Tape: FunctionComponent<TapeProps> = ({ tabs, selectedTabId = "" }) => {
+  const [canScrollLeft, setCanScrollLeft] = useState<boolean>(true);
+  const [canScrollRight, setCanScrollRight] = useState<boolean>(true);
+
+  const [scrollRightPoints, setScrollRightPoints] = useState<number[]>([]);
+  const [scrollLeftPoints, setScrollLeftPoints] = useState<number[]>([]);
+  const [scrollMiddlePoints, setScrollMiddlePoints] = useState<
+    { index: number; point: number }[]
+  >([]);
+
+  const [translateX, setTranslateX] = useState<number>(0);
+
   const tapeRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // This useLayoutEffect manages scrolling behavior of the "tape" within the "container" element.
   useLayoutEffect(() => {
     const tape = tapeRef.current;
     const container = containerRef.current;
-    if (tape && container) {
-      // Here we have tape (strip of tabs) and if contains more tabs then container (visible area) can fill, then we can scroll it conditionally.
-      const containerWidth = container.clientWidth;
-      const tapeWidth = tape.getBoundingClientRect().width;
+    if (!tape || !container) return;
 
-      const isScrollable = tapeWidth > containerWidth;
+    const containerWidth = container.clientWidth;
+    const tapeWidth = tape.getBoundingClientRect().width;
 
-      // If we already reached the end of the tape, we should not show the right, logic for canScrollLeft is pretty simple because we have scrollLeft value.
-      setCanScrollLeft(isScrollable && scrollLeft < 0);
-      // Here I say tapeWidth + scrollLeft > containerWidth (that means, if difference between tapeWidth and scrollLeft more then containerWidth then we can scroll).
-      // but there is one edge case, when the last element is overflowing, then i compare this not to containerWidth, but to containerWidth + difference between normal tab and extended one (TAB_EXPANSION).
-      setCanScrollRight(
-        isScrollable &&
-          tapeWidth + scrollLeft >
-            containerWidth + (isLastElementOverflowing ? TAB_EXPANSION : 0)
-      );
+    const tabsArray = Array.from(tape.children) as HTMLElement[];
 
-      tape.style.transform = `translateX(${scrollLeft}px)`;
-    }
-  }, [isLastElementOverflowing, scrollLeft]);
+    const navigationPoints = tabsArray.reduce(
+      (
+        acc: {
+          rightPoints: number[];
+          leftPoints: number[];
+          middlePoints: { index: number; point: number }[];
+          stepWidth: number;
+        },
+        tab: HTMLElement,
+        index
+      ) => {
+        const tabWidth = getEntireTabWidth(tab);
+
+        if (acc.stepWidth < containerWidth / 2) {
+          acc.middlePoints.push({
+            index,
+            point: TAB_MARGIN,
+          });
+        }
+        if (acc.stepWidth > tapeWidth - containerWidth / 2) {
+          acc.middlePoints.push({
+            index,
+            point: tapeWidth - containerWidth,
+          });
+        } else if (acc.stepWidth > containerWidth / 2) {
+          acc.middlePoints.push({
+            index,
+            point: acc.stepWidth - (containerWidth - tabWidth) / 2,
+          });
+        }
+        acc.stepWidth += tabWidth;
+        if (acc.stepWidth > containerWidth) {
+          acc.rightPoints.push(acc.stepWidth - containerWidth);
+        }
+        acc.leftPoints.unshift(acc.stepWidth);
+        return acc;
+      },
+      {
+        rightPoints: [],
+        middlePoints: [],
+        leftPoints: [0],
+        stepWidth: 0,
+      }
+    );
+
+    setScrollLeftPoints(
+      navigationPoints.leftPoints.filter(
+        (point) =>
+          point <=
+          navigationPoints.rightPoints[navigationPoints.rightPoints.length - 1]
+      )
+    );
+    setScrollRightPoints(navigationPoints.rightPoints);
+    setScrollMiddlePoints(navigationPoints.middlePoints);
+    console.log(navigationPoints.middlePoints);
+  }, [tabs]);
 
   useEffect(() => {
     if (selectedTabId) {
       const selectedTabIndex = tabs.findIndex(
-        (chip) => chip.id === selectedTabId
+        (tab) => tab.id === selectedTabId
       );
       scrollHandler(selectedTabIndex);
     }
@@ -85,135 +123,35 @@ const Tape: FunctionComponent<TapeProps> = ({
   const getEntireTabWidth = (tab: HTMLElement) =>
     tab.getBoundingClientRect().width + TAB_MARGIN;
 
-  const scrollHandler = (direction: ScrollDirections | number) => {
-    const tape = tapeRef.current;
-    const container = containerRef.current;
-    if (tape && container) {
-      const tapeWidth = tape.getBoundingClientRect().width;
-      const containerWidth = container.clientWidth;
-      const tabs = Array.from(tape.children) as HTMLElement[];
-      let visibleWidth = 0;
-      let targetTabIndex = 0;
+  const scrollHandler = (direction: Directions | number) => {
+    if (direction === Directions.RIGHT) {
+      const brakePoint = scrollRightPoints.find(
+        (point) => point > -translateX + TAB_MARGIN
+      );
+      typeof brakePoint === "number" && setTranslateX(-brakePoint + TAB_MARGIN);
+    }
 
-      // scrolling to particular tab
-      if (typeof direction === "number") {
-        // Here we have 3 cases: isFirstTab, isTabFullyVisibleFromRight, or the target tab somewhere in the middle.
+    if (direction === Directions.LEFT) {
+      const brakePoint = scrollLeftPoints.find((point) => point < -translateX);
+      typeof brakePoint === "number" && setTranslateX(-brakePoint);
+    }
 
-        // If first tab was clicked, we just set scrollLeft to zero, that brings us at the start of the tape.
-        const isFirstTab = direction === 0;
-        if (isFirstTab) {
-          return setScrollLeft(0);
-        }
-
-        let visibleWidthfromRight = 0;
-        for (let i = tabs.length - 1; i >= direction; i--) {
-          visibleWidthfromRight += getEntireTabWidth(tabs[i]);
-        }
-
-        // If the one of last tabs was clicked, we need to scroll at the end of tape, so we take tapeWidth - containerWidth
-        // and at this point we have to reverse it to negative to set it as the scrollLeft, accounting TAB_GAP and TAB_EXPANSION to make it fully visible.
-        if (containerWidth > visibleWidthfromRight) {
-          return setScrollLeft(
-            -(
-              tapeWidth -
-              containerWidth +
-              TAB_MARGINS +
-              (isLastElementOverflowing ? TAB_EXPANSION : 0)
-            )
-          );
-        }
-
-        // Othervise we find the sum of the tab widths before the direction tab
-        for (let i = 0; i < direction; i++) {
-          visibleWidth += getEntireTabWidth(tabs[i]); // Include the tab's width and margin.
-        }
-
-        // And setting it's sum turned to negative as a scrollLeft value including some extra space before for conveniance.
-        setScrollLeft(-visibleWidth + TAB_GAP);
-      }
-
-      if (direction === ScrollDirections.LEFT) {
-        /*
-          'scrollRight' represents the difference between the right edge of the container (visible area),
-          and the right edge of the entire tape, including elements beyond the visible area.
-        */
-        const scrollRight = tapeWidth - -scrollLeft - containerWidth;
-
-        // Find the index of the previous tab that doesn't fully fit inside the container.
-        for (let i = tabs.length - 1; i >= 0; i--) {
-          visibleWidth += getEntireTabWidth(tabs[i]); // Include the tab's width and margin.
-          if (visibleWidth > containerWidth + scrollRight) {
-            targetTabIndex = i;
-            break; // Stop the loop as we've found the previous tab index.
-          }
-        }
-
-        // Calculate the width of cropped part tab to scroll back to make the left tab fully visible.
-        let stepWidth =
-          visibleWidth - containerWidth - scrollRight - TAB_MARGIN;
-
-        /*
-          When the last visible tab from left perfectly aligns with the left edge of the container,
-          the 'stepWidth' becomes very close to zero or zero itself.
-          This happens when 'visibleWidth' is equal to 'containerWidth' + 'scrollRight' + 8px of margin
-          Then, instead of looking for the width of the cropped part of the tab, we take the previous one and scroll it by its width.
-        */
-        if (targetTabIndex && stepWidth < 1) {
-          stepWidth =
-            tabs[targetTabIndex - 1].getBoundingClientRect().width + TAB_MARGIN;
-        }
-
-        /*
-          If 'scrollLeft' + 'stepWidth' equals -8 or less, it means the tape has reached the beginning,
-          and there are no more tabs before. In this case, set 'scrollLeft' to 0 to prevent further scrolling to the left.
-          Otherwise, continue scrolling to the left by adding 'stepWidth' to 'prevScrollLeft'.
-        */
-        const reachedBeginning =
-          scrollLeft + stepWidth >= -(TAB_MARGIN + TAB_BORDERS);
-
-        setScrollLeft((prevScrollLeft) =>
-          reachedBeginning ? 0 : prevScrollLeft + stepWidth
-        );
-      }
-
-      if (direction === ScrollDirections.RIGHT) {
-        // Find the index of the next tab that doesn't fully fit inside the container.
-        for (let i = 0; i < tabs.length; i++) {
-          visibleWidth += getEntireTabWidth(tabs[i]); // Include the tab's width and margin.
-          if (visibleWidth > containerWidth + -scrollLeft) {
-            targetTabIndex = i;
-            break; // Stop the loop as we've found the next tab index.
-          }
-        }
-
-        // Calculate the width of scroll right step to make the next tab fully visible including margins and borders.
-        const stepWidth =
-          visibleWidth -
-          containerWidth +
-          scrollLeft +
-          TAB_MARGINS +
-          TAB_BORDERS;
-
-        setScrollLeft((prevScrollLeft) => prevScrollLeft - stepWidth);
-      }
+    if (typeof direction === "number") {
+      const brakePoint = scrollMiddlePoints.find(
+        (point) => point.index === direction
+      );
+      typeof brakePoint?.point === "number" &&
+        setTranslateX(-brakePoint.point + TAB_MARGIN);
     }
   };
 
   return (
     <StyledTape ref={containerRef}>
-      <ScrollButton
-        direction={ScrollDirections.LEFT}
-        isVisible={canScrollLeft}
-        onClick={scrollHandler}
-      />
-      <StyledWrapper ref={tapeRef}>
+      <StyledWrapper ref={tapeRef} translateX={translateX}>
         {tabs.map(renderTab)}
       </StyledWrapper>
-      <ScrollButton
-        direction={ScrollDirections.RIGHT}
-        isVisible={canScrollRight}
-        onClick={scrollHandler}
-      />
+      <ScrollButton direction={Directions.LEFT} onClick={scrollHandler} />
+      <ScrollButton direction={Directions.RIGHT} onClick={scrollHandler} />
     </StyledTape>
   );
 };

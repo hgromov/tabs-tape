@@ -2,7 +2,7 @@
 import styled, { css } from "styled-components";
 
 import { palette } from "../colors";
-import { ScrollButtonProps, ScrollDirections } from "../tabs.types";
+import { Directions, ScrollButtonProps } from "../tabs.types";
 
 const flexCenter = css`
   display: flex;
@@ -10,37 +10,42 @@ const flexCenter = css`
   justify-content: center;
 `;
 
-const IconDirections: Record<ScrollDirections, string> = {
-  [ScrollDirections.LEFT]: "-90deg",
-  [ScrollDirections.RIGHT]: "90deg"
+const IconDirections: Record<Directions, string> = {
+  [Directions.LEFT]: "-90deg",
+  [Directions.RIGHT]: "90deg"
 };
 
 const IconWrapper = styled.div`
-  width: 32px;
-  height: 32px;
+  width: 40px;
+  height: 100px;
   ${flexCenter}
   margin: 4px;
-  background: ${palette.white};
-  border-radius: 50%;
-  box-shadow: 0px 0px 4px 0px ${palette.lightGray};
+  background: ${palette.darkBlue};
+  transition: transform ease-in-out 0.9;
+
+  &:hover {
+    transform: scale(1.1);
+  }
+  &:active {
+    transform: scale(1);
+  }
 `;
 
 const StyledScrollButton = styled.div<ScrollButtonProps>`
-  width: 72px;
-  height: 64px;
+  width: 40px;
+  height: 100px;
   position: absolute;
   ${flexCenter}
   cursor: pointer;
-  visibility: ${({ isVisible }) => (isVisible ? "visible" : "hidden")};
+  visibility: visible;
   z-index: 1000;
 
   ${({ direction }) => css`
     ${direction}: 0;
-    background: linear-gradient(to ${direction}, transparent, ${palette.white} 30%);
   `}
 
   & svg {
-    ${({ direction }: { direction: ScrollDirections }) => `transform: rotate(${IconDirections[direction]});`}
+    ${({ direction }: { direction: Directions }) => `transform: rotate(${IconDirections[direction]});`}
   }
 `;
 

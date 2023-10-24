@@ -1,4 +1,4 @@
-enum ScrollDirections {
+enum Directions {
   LEFT = "left",
   RIGHT = "right",
 }
@@ -9,9 +9,9 @@ type TapeProps = {
 };
 
 type ScrollButtonProps = {
-  direction: ScrollDirections;
-  isVisible: boolean;
-  onClick: (direction: ScrollDirections) => void;
+  direction: Directions;
+  isVisible?: boolean;
+  onClick: (direction: Directions) => void;
 };
 
 type TabProps = {
@@ -35,6 +35,6 @@ interface StyledTabProps {
   isSelected?: boolean;
 }
 
-export { ScrollDirections };
+export { Directions };
 
 export type { TabProps, StyledTabProps, SvgProps, TapeProps, ScrollButtonProps };

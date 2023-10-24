@@ -4,9 +4,9 @@ import { FunctionComponent, useLayoutEffect, useRef, useState } from "react";
 import { StyledTab } from "./tab.styled";
 import { TabProps } from "../tabs.types";
 
-const BASE_CHIP_HEIGHT = 40;
-const MAX_COLLAPSED_CHIP_WIDTH = 300;
-const MAX_EXPANDED_CHIP_WIDTH = 380;
+const BASE_TAB_HEIGHT = 40;
+const MAX_COLLAPSED_TAB_WIDTH = 300;
+const MAX_EXPANDED_TAB_WIDTH = 380;
 const TAB_PADDING = 16;
 const TAB_PADDINGS = TAB_PADDING * 2;
 const DEFAULT_LINES_AMOUNT = 1;
@@ -17,22 +17,26 @@ const Tab: FunctionComponent<TabProps> = ({ onClick, text, isSelected }) => {
   const tabRef = useRef<HTMLDivElement>(null);
   const [isTextOverflowing, setIsTextOverflowing] = useState<boolean>(false);
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
-  const [expandWidth, setExpandWidth] = useState<number>(MAX_COLLAPSED_CHIP_WIDTH);
-  const [expandHeight, setExpandHeight] = useState<number>(BASE_CHIP_HEIGHT);
+  const [expandWidth, setExpandWidth] = useState<number>(
+    MAX_COLLAPSED_TAB_WIDTH
+  );
+  const [expandHeight, setExpandHeight] = useState<number>(BASE_TAB_HEIGHT);
 
   useLayoutEffect(() => {
     const container = tabRef.current;
     if (!container) return;
     if (container.clientWidth < container.scrollWidth) {
       setIsTextOverflowing(true);
-      let width = MAX_COLLAPSED_CHIP_WIDTH;
-      let height = BASE_CHIP_HEIGHT;
+      let width = MAX_COLLAPSED_TAB_WIDTH;
+      let height = BASE_TAB_HEIGHT;
       let lines = DEFAULT_LINES_AMOUNT;
 
-      if (container.scrollWidth > MAX_EXPANDED_CHIP_WIDTH) {
-        lines = Math.ceil(container.scrollWidth / (MAX_EXPANDED_CHIP_WIDTH - TAB_PADDINGS));
+      if (container.scrollWidth > MAX_EXPANDED_TAB_WIDTH) {
+        lines = Math.ceil(
+          container.scrollWidth / (MAX_EXPANDED_TAB_WIDTH - TAB_PADDINGS)
+        );
         height = Math.min(lines, MAXIMUM_LINES) * LINE_HEIGHT;
-        width = MAX_EXPANDED_CHIP_WIDTH;
+        width = MAX_EXPANDED_TAB_WIDTH;
       } else {
         width = container.scrollWidth;
       }
@@ -54,9 +58,7 @@ const Tab: FunctionComponent<TabProps> = ({ onClick, text, isSelected }) => {
 
   const handleClick = () => {
     toggleExpansion();
-    setTimeout(() => {
-      onClick && onClick();
-    }, 200);
+    onClick && onClick();
   };
 
   return (

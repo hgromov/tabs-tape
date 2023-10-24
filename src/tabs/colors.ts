@@ -1,16 +1,17 @@
 const palette = {
+  darkBlue: "#001331",
   darkGray: "#424242",
   darkGreen: "#2e5f62",
   lighterGray: "#eeeeee",
   lightGray: "#cccccc",
-  lightGreen: "#e1e9df",
+  paper: "#efefef",
   white: "#ffffff",
 };
 
 const tabTheme = {
   backgroundColor: {
-    hovered: palette.lightGreen,
-    primary: palette.white,
+    hovered: palette.white,
+    primary: palette.paper,
   },
   borderColor: palette.lightGray,
   color: {
