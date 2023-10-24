@@ -14,13 +14,14 @@ const LINE_HEIGHT = 28;
 const MAXIMUM_LINES = 3;
 
 const Tab: FunctionComponent<TabProps> = ({ onClick, text, isSelected }) => {
-  const tabRef = useRef<HTMLDivElement>(null);
   const [isTextOverflowing, setIsTextOverflowing] = useState<boolean>(false);
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
   const [expandWidth, setExpandWidth] = useState<number>(
     MAX_COLLAPSED_TAB_WIDTH
   );
   const [expandHeight, setExpandHeight] = useState<number>(BASE_TAB_HEIGHT);
+
+  const tabRef = useRef<HTMLDivElement>(null);
 
   useLayoutEffect(() => {
     const container = tabRef.current;
@@ -57,7 +58,8 @@ const Tab: FunctionComponent<TabProps> = ({ onClick, text, isSelected }) => {
   };
 
   const handleClick = () => {
-    toggleExpansion();
+    if (isSelected) toggleExpansion();
+
     onClick && onClick();
   };
 

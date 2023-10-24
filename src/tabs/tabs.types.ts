@@ -5,7 +5,6 @@ enum Directions {
 
 type TapeProps = {
   tabs: { label: string; id: string }[];
-  selectedTabId?: string;
 };
 
 type ScrollButtonProps = {

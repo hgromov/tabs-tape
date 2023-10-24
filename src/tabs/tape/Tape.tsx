@@ -13,7 +13,8 @@ import { StyledTape, StyledWrapper } from "./tape.styled";
 
 const TAB_MARGIN = 12;
 
-const Tape: FunctionComponent<TapeProps> = ({ tabs, selectedTabId = "" }) => {
+const Tape: FunctionComponent<TapeProps> = ({ tabs }) => {
+  const [selectedTabId, setSelectedTabId] = useState<string>("");
   const [canScrollLeft, setCanScrollLeft] = useState<boolean>(true);
   const [canScrollRight, setCanScrollRight] = useState<boolean>(true);
 
@@ -105,17 +106,18 @@ const Tape: FunctionComponent<TapeProps> = ({ tabs, selectedTabId = "" }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const renderTab = (data: any, index: number) => {
+  const renderTab = (tabData: any, index: number) => {
     const handleClick = () => {
       if (canScrollLeft || canScrollRight) scrollHandler(index);
+      setSelectedTabId(tabData.id);
     };
 
     return (
       <Tab
-        isSelected={data.id === selectedTabId}
-        key={data.label + data.id}
+        isSelected={tabData.id === selectedTabId}
+        key={tabData.label + tabData.id}
         onClick={handleClick}
-        text={data.label}
+        text={tabData.label}
       />
     );
   };
