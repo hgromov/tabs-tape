@@ -106,16 +106,6 @@ const Tape: FunctionComponent<TapeProps> = ({ tabs }) => {
     console.log(navigationPoints.middlePoints);
   }, [tabs]);
 
-  useEffect(() => {
-    if (selectedTabId) {
-      const selectedTabIndex = tabs.findIndex(
-        (tab) => tab.id === selectedTabId
-      );
-      scrollHandler(selectedTabIndex);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   const renderTab = (tabData: any, index: number) => {
     const handleClick = () => {
       if (canScrollLeft || canScrollRight) scrollHandler(index);
