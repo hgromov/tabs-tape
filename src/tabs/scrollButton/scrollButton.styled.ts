@@ -20,25 +20,18 @@ const IconWrapper = styled.div`
   height: 100px;
   ${flexCenter}
   margin: 4px;
-  background: ${palette.darkBlue};
-  transition: transform ease-in-out 0.9;
-
-  &:hover {
-    transform: scale(1.1);
-  }
-  &:active {
-    transform: scale(1);
-  }
 `;
 
 const StyledScrollButton = styled.div<ScrollButtonProps>`
   width: 40px;
-  height: 100px;
+  height: 120px;
   position: absolute;
   ${flexCenter}
   cursor: pointer;
   visibility: visible;
   z-index: 1000;
+
+  ${({isActive}) => !isActive ? "background: #061c40; cursor: default;" : ""}
 
   ${({ direction }) => css`
     ${direction}: 0;

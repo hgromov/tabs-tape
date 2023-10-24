@@ -9,7 +9,7 @@ type TapeProps = {
 
 type ScrollButtonProps = {
   direction: Directions;
-  isVisible?: boolean;
+  isActive?: boolean;
   onClick: (direction: Directions) => void;
 };
 

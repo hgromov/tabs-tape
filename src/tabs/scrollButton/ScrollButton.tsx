@@ -6,12 +6,12 @@ import { IconWrapper, StyledScrollButton } from "./scrollButton.styled";
 
 const ScrollButton: FunctionComponent<ScrollButtonProps> = ({
   direction,
-  isVisible,
+  isActive,
   onClick,
 }) => (
   <StyledScrollButton
     direction={direction}
-    isVisible={isVisible}
+    isActive={isActive}
     onClick={() => onClick(direction)}
   >
     <IconWrapper>

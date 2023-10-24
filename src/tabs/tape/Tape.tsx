@@ -29,6 +29,16 @@ const Tape: FunctionComponent<TapeProps> = ({ tabs }) => {
   const tapeRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
+  useEffect(() => {
+    setCanScrollLeft(!(translateX === 0));
+    setCanScrollRight(
+      !(
+        translateX - TAB_MARGIN ===
+        -scrollRightPoints[scrollRightPoints.length - 1]
+      )
+    );
+  }, [translateX, scrollRightPoints, scrollLeftPoints]);
+
   useLayoutEffect(() => {
     const tape = tapeRef.current;
     const container = containerRef.current;
@@ -152,8 +162,16 @@ const Tape: FunctionComponent<TapeProps> = ({ tabs }) => {
       <StyledWrapper ref={tapeRef} translateX={translateX}>
         {tabs.map(renderTab)}
       </StyledWrapper>
-      <ScrollButton direction={Directions.LEFT} onClick={scrollHandler} />
-      <ScrollButton direction={Directions.RIGHT} onClick={scrollHandler} />
+      <ScrollButton
+        direction={Directions.LEFT}
+        isActive={canScrollLeft}
+        onClick={scrollHandler}
+      />
+      <ScrollButton
+        direction={Directions.RIGHT}
+        isActive={canScrollRight}
+        onClick={scrollHandler}
+      />
     </StyledTape>
   );
 };
