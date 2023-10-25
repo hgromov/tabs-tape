@@ -2,7 +2,7 @@ import React from "react";
 import styled, { keyframes } from "styled-components";
 
 import { Tape } from "./tabs/tape";
-import { palette } from "./tabs/colors";
+import { palette } from "./tabs/constants";
 
 const gradientAnimation = keyframes`
 0% {
@@ -61,6 +61,16 @@ const tabs = [
     label:
       "tab with a lot of small words inside of it bla bla bla bla bla bla bla bla bla bla la bla bla bla bla bla bla bla bla yey",
     id: "8",
+  },
+  {
+    label:
+      "tab with a lot of small words inside of it bla bla bla bla bla bla bla bla bla bla la bla bla bla bla bla bla bla bla yey",
+    id: "9",
+  },
+  {
+    label:
+      "tab with a lot of small words inside of it bla bla bla bla bla bla bla bla bla bla la bla bla bla bla bla bla bla bla yey",
+    id: "10",
   },
 ];
 

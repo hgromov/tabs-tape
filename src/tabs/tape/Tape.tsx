@@ -7,11 +7,10 @@ import {
 } from "react";
 
 import { Tab } from "../tab";
+import { TAB_MARGIN } from "../constants";
 import { ScrollButton } from "../scrollButton";
 import { TapeProps, Directions } from "../tabs.types";
 import { StyledTape, StyledWrapper } from "./tape.styled";
-
-const TAB_MARGIN = 12;
 
 const Tape: FunctionComponent<TapeProps> = ({ tabs }) => {
   const [selectedTabId, setSelectedTabId] = useState<string>("");
@@ -61,24 +60,26 @@ const Tape: FunctionComponent<TapeProps> = ({ tabs }) => {
         index
       ) => {
         const tabWidth = getEntireTabWidth(tab);
-
+        // for first tabs
         if (acc.stepWidth < containerWidth / 2) {
           acc.middlePoints.push({
             index,
             point: TAB_MARGIN,
           });
         }
-        if (acc.stepWidth > tapeWidth - containerWidth / 2) {
+        // for tabs in the end
+        if (tabWidth + acc.stepWidth > tapeWidth - containerWidth / 2) {
           acc.middlePoints.push({
             index,
             point: tapeWidth - containerWidth,
-          });
+          }); // for tabs in the middle
         } else if (acc.stepWidth > containerWidth / 2) {
           acc.middlePoints.push({
             index,
             point: acc.stepWidth - (containerWidth - tabWidth) / 2,
           });
         }
+
         acc.stepWidth += tabWidth;
         if (acc.stepWidth > containerWidth) {
           acc.rightPoints.push(acc.stepWidth - containerWidth);
@@ -103,7 +104,6 @@ const Tape: FunctionComponent<TapeProps> = ({ tabs }) => {
     );
     setScrollRightPoints(navigationPoints.rightPoints);
     setScrollMiddlePoints(navigationPoints.middlePoints);
-    console.log(navigationPoints.middlePoints);
   }, [tabs]);
 
   const renderTab = (tabData: any, index: number) => {
@@ -142,6 +142,9 @@ const Tape: FunctionComponent<TapeProps> = ({ tabs }) => {
       const brakePoint = scrollMiddlePoints.find(
         (point) => point.index === direction
       );
+
+      console.log({ brakePoint });
+
       typeof brakePoint?.point === "number" &&
         setTranslateX(-brakePoint.point + TAB_MARGIN);
     }

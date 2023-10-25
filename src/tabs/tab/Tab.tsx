@@ -1,17 +1,17 @@
 import { useClickAway } from "react-use";
-import { FunctionComponent, useLayoutEffect, useRef, useState } from "react";
+import { FunctionComponent, useEffect, useRef, useState } from "react";
 
+import {
+  BASE_TAB_HEIGHT,
+  DEFAULT_LINES_AMOUNT,
+  LINE_HEIGHT,
+  MAXIMUM_LINES,
+  MAX_COLLAPSED_TAB_WIDTH,
+  MAX_EXPANDED_TAB_WIDTH,
+  TAB_PADDINGS,
+} from "../constants";
 import { StyledTab } from "./tab.styled";
 import { TabProps } from "../tabs.types";
-
-const BASE_TAB_HEIGHT = 40;
-const MAX_COLLAPSED_TAB_WIDTH = 300;
-const MAX_EXPANDED_TAB_WIDTH = 380;
-const TAB_PADDING = 16;
-const TAB_PADDINGS = TAB_PADDING * 2;
-const DEFAULT_LINES_AMOUNT = 1;
-const LINE_HEIGHT = 28;
-const MAXIMUM_LINES = 3;
 
 const Tab: FunctionComponent<TabProps> = ({ onClick, text, isSelected }) => {
   const [isTextOverflowing, setIsTextOverflowing] = useState<boolean>(false);
@@ -23,7 +23,7 @@ const Tab: FunctionComponent<TabProps> = ({ onClick, text, isSelected }) => {
 
   const tabRef = useRef<HTMLDivElement>(null);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     const container = tabRef.current;
     if (!container) return;
     if (container.clientWidth < container.scrollWidth) {

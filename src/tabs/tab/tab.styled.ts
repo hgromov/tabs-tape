@@ -1,7 +1,9 @@
 import styled from "styled-components";
 
-import { tabTheme } from "../colors";
+import { tabTheme } from "../constants";
 import { StyledTabProps } from "../tabs.types";
+
+// TODO adjust tab expansion
 
 const StyledTab = styled.div<StyledTabProps>`
   box-sizing: border-box;
@@ -10,7 +12,7 @@ const StyledTab = styled.div<StyledTabProps>`
   line-height: 24px;
   overflow: hidden;
   text-overflow: ellipsis;
-  transition: all ease-in-out 0.3s, background-color 0s;
+  transition: all linear 0.3s, background-color 0s;
   user-select: none;
   cursor: pointer;
   border-radius: 1px;
@@ -27,9 +29,10 @@ const StyledTab = styled.div<StyledTabProps>`
     isExpanded ? expandHeight + "px" : "40px"};
   max-height: ${({ expandHeight, isExpanded }) =>
     isExpanded ? expandHeight + "px" : "40px"};
+
+  min-width: ${({ isExpanded }) => (isExpanded ? "300px" : "auto")};
   max-width: ${({ isExpanded }) => (isExpanded ? "380px" : "300px")};
-  min-width: ${({ expandWidth, isExpanded }) =>
-    isExpanded ? expandWidth + "px" : "auto"};
+
   text-align: ${({ isExpanded }) => (isExpanded ? "center" : "start")};
   white-space: ${({ expandWidth, isExpanded }) =>
     isExpanded && expandWidth && expandWidth === 380 ? "wrap" : "nowrap"};
@@ -43,6 +46,7 @@ const StyledTab = styled.div<StyledTabProps>`
 
   &:hover {
     background-color: ${tabTheme.backgroundColor.hovered};
+    color: ${tabTheme.color.selected};
   }
 `;
 

@@ -1,7 +1,6 @@
-// TODO: move colors to separate obj suck as tab.styled
 import styled, { css } from "styled-components";
 
-import { palette } from "../colors";
+import { palette } from "../constants";
 import { Directions, ScrollButtonProps } from "../tabs.types";
 
 const flexCenter = css`

@@ -4,19 +4,21 @@ const palette = {
   darkGreen: "#2e5f62",
   lighterGray: "#eeeeee",
   lightGray: "#cccccc",
+  gray: "#777777",
   paper: "#efefef",
   white: "#ffffff",
+  purple: "#f73261",
+  darkPurple: "#390045"
 };
 
 const tabTheme = {
   backgroundColor: {
     hovered: palette.white,
-    primary: palette.paper,
+    primary: palette.lighterGray,
   },
-  borderColor: palette.lightGray,
   color: {
-    default: palette.darkGray,
-    selected: palette.darkGreen,
+    default: palette.gray,
+    selected: palette.darkGray,
   },
 };
 

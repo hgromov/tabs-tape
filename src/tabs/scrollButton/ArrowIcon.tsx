@@ -1,4 +1,4 @@
-import { palette } from "../colors";
+import { palette } from "../constants";
 import { SvgProps } from "../tabs.types";
 
 const ArrowIcon = ({
